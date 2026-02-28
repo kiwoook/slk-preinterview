@@ -62,7 +62,7 @@
 
 | 문서 | 내용 |
 |------|------|
-| [요구사항](./docs/requirement/requirements.md) | 변경 요구사항 R-01~R-06, 가정 사항 A-01~A-11 |
+| [요구사항](./docs/requirement/requirements.md) | 변경 요구사항 R-01\~R-06, 가정 사항 A-01~A-11 |
 | [작업 계획](./docs/milestone/work-plan.md) | Phase 1~7 진행 현황 및 산출물 |
 
 **설계 문서**
