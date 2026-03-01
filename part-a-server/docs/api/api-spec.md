@@ -24,10 +24,9 @@ Authorization: Bearer {JWT token}
 | 401 | 인증 토큰 없음 또는 만료 |
 | 403 | 권한 없음 (다른 조직의 리소스 접근 시도) |
 | 404 | 조직을 찾을 수 없음 |
-| 429 | 외부 업체 API Rate Limit 초과. `Retry-After` 헤더 참고 |
 | 500 | 서버 내부 오류 |
 
-> **Daily Limit 초과 시**: 429와 동일하게 처리되나 당일 재시도는 무의미하다. 응답 body의 `code` 필드로 `DAILY_LIMIT_EXCEEDED`를 구분하여 클라이언트가 사용자에게 적절한 안내를 제공할 수 있도록 한다.
+> **실제 발송의 Rate Limit · Daily Limit 초과**: 발송은 Outbox에 저장 후 Spring Batch가 비동기로 처리하므로, 업체 API의 Rate Limit(429)이나 Daily Limit 초과는 클라이언트 응답에 직접 반영되지 않는다. 해당 발송 건은 `outbox_messages.status = FAILED`로 기록되며, 발송 내역에서 확인할 수 있다. 429는 벤더 API를 동기 호출하는 **연결 테스트(`POST /test`) 전용** 응답 코드다.
 
 ---
 
@@ -189,6 +188,8 @@ Authorization: Bearer {JWT token}
 > ⚠️ **우선순위: 낮음** — 초기 구현 범위 제외. Credential이 조직별 DB에 저장되므로, 이 엔드포인트는 **해당 조직의 Credential로 실제 업체 API 연결을 검증**한다.
 
 설정된 업체의 API 연결 상태를 검증한다. 실제 메시지를 발송하지 않고 인증 및 연결 여부만 확인한다.
+
+> 이 엔드포인트는 업체 API를 **동기 호출**하므로, 공통 에러 응답 외에 `429 Too Many Requests`가 추가로 발생할 수 있다. 업체 API Rate Limit 초과 시 `Retry-After` 헤더를 참고한다.
 
 ### Path Parameters
 
